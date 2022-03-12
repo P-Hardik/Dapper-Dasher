@@ -11,15 +11,15 @@ int main(){
     const int gravity{1}; //acceleration due to gravity (pixels/frame)/frame
 
     //character properties, character's name is *Scarfy*
-    Texture2D scarfy = LoadTexture("scarfy.png"); 
+    Texture2D scarfy = LoadTexture("textures/scarfy.png");
     Rectangle scarfyRec;
     scarfyRec.width = scarfy.width/6;
     scarfyRec.height = scarfy.height;
     scarfyRec.x = 0;
     scarfyRec.y = 0;
-    Vector2 scarfyPos; 
-    scarfyPos.x = windowWidth/2 - scarfy.width/2;
-    scarfyPos.y = windowHeight - scarfy.height;
+    Vector2 scarfyPos;
+    scarfyPos.x = windowWidth/2 - scarfyRec.width/2;
+    scarfyPos.y = windowHeight - scarfyRec.height;
 
     //velocity
     int velocity{0};
