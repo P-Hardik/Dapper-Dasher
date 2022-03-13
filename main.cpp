@@ -10,16 +10,18 @@ int main(){
 
     const int gravity{1'000}; //acceleration due to gravity (pixels/sec)/sec
 
+    // nebula variables
+    Texture2D nebula = LoadTexture("textures/12_nebula_spritesheet.png");
+    Rectangle nebRec{0.0, 0.0, nebula.width/8.f, nebula.height/8.f};
+    Vector2 nebPos{windowWidth, windowHeight - nebRec.height};
+    
+    //nebula x velocity (pixels/sec)
+    int nebVel{-600};       
+
     //character properties, character's name is *Scarfy*
     Texture2D scarfy = LoadTexture("textures/scarfy.png");
-    Rectangle scarfyRec;
-    scarfyRec.width = scarfy.width/6;
-    scarfyRec.height = scarfy.height;
-    scarfyRec.x = 0;
-    scarfyRec.y = 0;
-    Vector2 scarfyPos;
-    scarfyPos.x = windowWidth/2 - scarfyRec.width/2;
-    scarfyPos.y = windowHeight - scarfyRec.height;
+    Rectangle scarfyRec{0.0, 0.0, scarfy.width/6.f, scarfy.height/1.f};
+    Vector2 scarfyPos{(windowWidth/2 - scarfyRec.width/2), (windowHeight - scarfyRec.height)};
 
     //animation frame 
     int frame{};
@@ -59,26 +61,37 @@ int main(){
             velocity += jumpVelocity;
         }
         
-        scarfyPos.y += (velocity * dT); // updates scarfy's position
+        //update nebula position
+        nebPos.x += (nebVel * dT);
 
+        // updates scarfy's position
+        scarfyPos.y += (velocity * dT); 
+        
         //update animation frame 
-        runningTime += dT;
+        if(!isInAir){
+            runningTime += dT;
 
-        if(runningTime >= updateTime){
-            runningTime = 0;
+            if(runningTime >= updateTime){
+                runningTime = 0;
 
-            scarfyRec.x = frame * scarfyRec.width;
-            frame++;
-            if (frame > 5){
-                frame = 0;
+                scarfyRec.x = frame * scarfyRec.width;
+                frame++;
+                if (frame > 5){
+                    frame = 0;
+                }
             }
         }
 
+        // draw nebula
+        DrawTextureRec(nebula, nebRec, nebPos, WHITE);
+
+        //Draw scarfy
         DrawTextureRec(scarfy, scarfyRec, scarfyPos, WHITE);
 
         //stop drawing
         EndDrawing();
     }
     UnloadTexture(scarfy);
+    UnloadTexture(nebula);
     CloseWindow();
 }
