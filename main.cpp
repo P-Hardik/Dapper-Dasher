@@ -1,4 +1,6 @@
 #include "raylib.h"
+#include <string>
+using namespace std;
 
 int main(){
     //window dimentions
@@ -10,27 +12,32 @@ int main(){
 
     const int gravity{1'000}; //acceleration due to gravity (pixels/sec)/sec
 
-    // nebula variables
+    // nebula variables, nebula is the *obstacle*
     Texture2D nebula = LoadTexture("textures/12_nebula_spritesheet.png");
     Rectangle nebRec{0.0, 0.0, nebula.width/8.f, nebula.height/8.f};
     Vector2 nebPos{windowWidth, windowHeight - nebRec.height};
     
     //nebula x velocity (pixels/sec)
-    int nebVel{-600};       
+    int nebVel{-200};       
+
+    //nebula animation frame
+    int nebFrame{};
+    const float nebUpdateTime{1.0/16.0};
+    float nebRunningTime{};
 
     //character properties, character's name is *Scarfy*
     Texture2D scarfy = LoadTexture("textures/scarfy.png");
-    Rectangle scarfyRec{0.0, 0.0, scarfy.width/6.f, scarfy.height/1.f};
+    Rectangle scarfyRec{0.0, 0.0, scarfy.width/6.f, scarfy.height/1.f};   //(float) or (n).f
     Vector2 scarfyPos{(windowWidth/2 - scarfyRec.width/2), (windowHeight - scarfyRec.height)};
 
-    //animation frame 
+    //Scarfy animation frame 
     int frame{};
     const float updateTime{1.0/12.0}; //amount of time we update the animation frame
-    float runningTime{}; 
+    float runningTime{1.0/12.0}; 
 
     //velocity
     int velocity{0};
-    const int jumpVelocity{-600};  // jump velocity (pixels/second)
+    const float jumpVelocity{-569.3181818};  //(600) jump velocity (pixels/second)
 
     // check if character is in air
     bool isInAir{};
@@ -63,16 +70,16 @@ int main(){
         
         //update nebula position
         nebPos.x += (nebVel * dT);
-
+        
         // updates scarfy's position
         scarfyPos.y += (velocity * dT); 
         
-        //update animation frame 
+        //update scarfy (character) animation frames 
         if(!isInAir){
             runningTime += dT;
 
             if(runningTime >= updateTime){
-                runningTime = 0;
+                runningTime = 0.0;
 
                 scarfyRec.x = frame * scarfyRec.width;
                 frame++;
@@ -82,11 +89,27 @@ int main(){
             }
         }
 
+        //Update nebula (obstacle) animation
+        nebRunningTime += dT; //adds delta time to run time
+        
+        if(nebRunningTime >= nebUpdateTime){
+            nebRunningTime = 0.0;
+
+            nebRec.x = nebFrame * nebRec.width;
+            nebFrame++;
+            if (nebFrame > 7){
+                nebFrame = 0;  
+            }
+        }
+
         // draw nebula
         DrawTextureRec(nebula, nebRec, nebPos, WHITE);
 
         //Draw scarfy
         DrawTextureRec(scarfy, scarfyRec, scarfyPos, WHITE);
+
+        //Draw FPS
+        DrawFPS(10, 10);
 
         //stop drawing
         EndDrawing();
