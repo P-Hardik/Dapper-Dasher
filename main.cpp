@@ -1,4 +1,5 @@
 #include "raylib.h"
+
 struct AnimData{
     Rectangle rec;
     Vector2 pos;
@@ -9,11 +10,11 @@ struct AnimData{
 
 int main(){
     //window dimensions
-    const int windowWidth{512};
-    const int windowHeight{380};
+
+    const int windowDimensions[2] = {512, 380};
 
     // initialize the window
-    InitWindow(windowWidth, windowHeight, "Dapper Dasher!");
+    InitWindow(windowDimensions[0], windowDimensions[1], "Dapper Dasher!");
 
     // acceleration due to gravity (pixels/s)/s
     const int gravity{1'000};
@@ -24,19 +25,23 @@ int main(){
     // AnimData for nebula
     AnimData nebData{ 
         {0.0, 0.0, nebula.width/8.f, nebula.height/8.f}, // Rectangle rec
-        {windowWidth, (float)windowHeight - nebula.height/8}, // Vector2 pos
+        {(float)windowDimensions[0], (float)windowDimensions[1] - nebula.height/8}, // Vector2 pos
         0, // int frame
-        1.0/12.0, // float updateTime
+        1.0/16.0, // float updateTime
         0 // float runningTime
     };
 
     AnimData neb2Data{
         {0.0, 0.0, nebula.width/8.f, nebula.height/8.f},
-        {windowWidth + 300, (float)windowHeight - nebula.height/8},
+        {(float)windowDimensions[0] + 300, (float)windowDimensions[1] - nebula.height/8},
         0,
-        1.0/16.0,
+        1.0/32.0, //smaller fraction = the faster animations 
         0.0
     };
+
+    AnimData nebulae[] {nebData, neb2Data};
+    //nebulae[0]
+    //nebulae[1]
 
     // nebula X velocity (pixels/second)
     int nebVel{-200};
@@ -45,7 +50,7 @@ int main(){
     Texture2D scarfy = LoadTexture("textures/scarfy.png");
     AnimData scarfyData{
         {0.0, 0.0, scarfy.width/6.f, (float)scarfy.height}, //Rectangle rec
-        {windowWidth/2.f - scarfyData.rec.width/2.f, windowHeight - scarfyData.rec.height}, // Vector2 pos
+        {windowDimensions[0]/2.f - scarfyData.rec.width/2.f, windowDimensions[1] - scarfyData.rec.height}, // Vector2pos
         0, // int frame
         1.0/12.0, //float updateTime
         0.0, //float runningTime
@@ -60,8 +65,7 @@ int main(){
     int velocity{0};
 
     SetTargetFPS(60);
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()){
         // delta time (time since last frame)
         const float dT{GetFrameTime()};
 
@@ -70,7 +74,7 @@ int main(){
         ClearBackground(WHITE);
 
         // perform ground check
-        if (scarfyData.pos.y >= windowHeight - scarfyData.rec.height){
+        if (scarfyData.pos.y >= windowDimensions[1] - scarfyData.rec.height){
             // rectangle is on the ground
             velocity = 0;
             isInAir = false;
