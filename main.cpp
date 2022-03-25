@@ -27,7 +27,7 @@ int main(){
         {0.0, 0.0, nebula.width/8.f, nebula.height/8.f}, // Rectangle rec
         {(float)windowDimensions[0], (float)windowDimensions[1] - nebula.height/8}, // Vector2 pos
         0, // int frame
-        1.0/16.0, // float updateTime
+        1.0/(16.0), // float updateTime
         0 // float runningTime
     };
 
@@ -153,6 +153,9 @@ int main(){
 
         // stop drawing
         EndDrawing();
+
+        //Displays real-time FPS
+        DrawFPS(10, 10); 
     }
     UnloadTexture(scarfy);
     UnloadTexture(nebula);
