@@ -23,7 +23,7 @@ int main(){
     Texture2D nebula = LoadTexture("textures/12_nebula_spritesheet.png");
 
     //amount of the nebula
-    const int nebNum{3};
+    const int nebNum{10};
 
     // Animation Data for nebula
     AnimData nebulae[nebNum] {};
@@ -33,17 +33,12 @@ int main(){
         nebulae[i].rec.y = 0.0;
         nebulae[i].rec.width = nebula.width/8.f;
         nebulae[i].rec.height = nebula.height/8.f;
-
+        nebulae[i].pos.x = (float)windowDimensions[0] + (i * 300); //for distance between each
         nebulae[i].pos.y = (float)windowDimensions[1] - nebula.height/8;
         nebulae[i].frame = 0;
         nebulae[i].runningTime = 0.0;
         nebulae[i].updateTime = 0.0;
     };
-
-    nebulae[0].pos.x = (float)windowDimensions[0];
-    nebulae[1].pos.x = (float)windowDimensions[0] + 300;
-    nebulae[2].pos.x = (float)windowDimensions[0] + 600;
-
 
     // nebula X velocity (pixels/second)
     int nebVel{-200};
@@ -91,7 +86,7 @@ int main(){
             velocity += jumpVel;
         }
 
-        // update all nebula position
+        // update each nebula's position from lots of nebulae
         for (int i = 0; i < nebNum; i++){
             nebulae[i].pos.x += nebVel * dT;
         };
@@ -119,7 +114,7 @@ int main(){
 
         // update nebula animation frame
         for (int i = 0; i < nebNum; i++){
-            // update nebula2 animation frame
+            // update nebula animation frame
             nebulae[i].runningTime += dT;
 
             if (nebulae[i].runningTime >= nebulae[i].updateTime){
@@ -133,7 +128,7 @@ int main(){
             }
         };
 
-        // draw each nebula
+        // draw each of the lots of nebulae
         for (int i = 0; i < nebNum; i++){
             DrawTextureRec(nebula, nebulae[i].rec, nebulae[i].pos, RAYWHITE);
         };
