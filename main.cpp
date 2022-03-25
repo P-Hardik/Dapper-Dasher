@@ -22,26 +22,28 @@ int main(){
     // nebula variables
     Texture2D nebula = LoadTexture("textures/12_nebula_spritesheet.png");
 
-    // AnimData for nebula
-    AnimData nebData{ 
-        {0.0, 0.0, nebula.width/8.f, nebula.height/8.f}, // Rectangle rec
-        {(float)windowDimensions[0], (float)windowDimensions[1] - nebula.height/8}, // Vector2 pos
-        0, // int frame
-        1.0/(16.0), // float updateTime
-        0 // float runningTime
+    //amount of the nebula
+    const int nebNum{3};
+
+    // Animation Data for nebula
+    AnimData nebulae[nebNum] {};
+
+    for (int i = 0; i < nebNum; i++){
+        nebulae[i].rec.x = 0.0;
+        nebulae[i].rec.y = 0.0;
+        nebulae[i].rec.width = nebula.width/8.f;
+        nebulae[i].rec.height = nebula.height/8.f;
+
+        nebulae[i].pos.y = (float)windowDimensions[1] - nebula.height/8;
+        nebulae[i].frame = 0;
+        nebulae[i].runningTime = 0.0;
+        nebulae[i].updateTime = 0.0;
     };
 
-    AnimData neb2Data{
-        {0.0, 0.0, nebula.width/8.f, nebula.height/8.f},
-        {(float)windowDimensions[0] + 300, (float)windowDimensions[1] - nebula.height/8},
-        0,
-        1.0/32.0, //smaller fraction = the faster animations 
-        0.0
-    };
+    nebulae[0].pos.x = (float)windowDimensions[0];
+    nebulae[1].pos.x = (float)windowDimensions[0] + 300;
+    nebulae[2].pos.x = (float)windowDimensions[0] + 600;
 
-    AnimData nebulae[] {nebData, neb2Data};
-    //nebulae[0]
-    //nebulae[1]
 
     // nebula X velocity (pixels/second)
     int nebVel{-200};
@@ -89,11 +91,10 @@ int main(){
             velocity += jumpVel;
         }
 
-        // update nebula position
-        nebulae[0].pos.x += nebVel * dT;
-
-        // update the second nebula's position
-        nebulae[1].pos.x += nebVel * dT;
+        // update all nebula position
+        for (int i = 0; i < nebNum; i++){
+            nebulae[i].pos.x += nebVel * dT;
+        };
 
         // update scarfy position
         scarfyData.pos.y += velocity * dT;
@@ -117,36 +118,25 @@ int main(){
         }
 
         // update nebula animation frame
-        nebulae[0].runningTime += dT;
+        for (int i = 0; i < nebNum; i++){
+            // update nebula2 animation frame
+            nebulae[i].runningTime += dT;
 
-        if (nebulae[0].runningTime >= nebulae[0].updateTime){
-            nebulae[0].runningTime = 0.0;
-            nebulae[0].rec.x = nebulae[0].frame * nebulae[0].rec.width;
-            nebulae[0].frame++;
+            if (nebulae[i].runningTime >= nebulae[i].updateTime){
+                nebulae[i].runningTime = 0.0;
+                nebulae[i].rec.x = nebulae[i].frame * nebulae[i].rec.width;
+                nebulae[i].frame++;
 
-            if (nebulae[0].frame > 7){ 
-                nebulae[0].frame = 0;
+                if (nebulae[i].frame > 7){ 
+                    nebulae[i].frame = 0;
+                }
             }
-        }
+        };
 
-        // update nebula2 animation frame
-        nebulae[1].runningTime += dT;
-
-        if (nebulae[1].runningTime >= nebulae[1].updateTime){
-            nebulae[1].runningTime = 0.0;
-            nebulae[1].rec.x = nebulae[1].frame * nebulae[1].rec.width;
-            nebulae[1].frame++;
-
-            if (nebulae[1].frame > 7){ 
-                nebulae[1].frame = 0;
-            }
-        }
-
-        // draw nebula
-        DrawTextureRec(nebula, nebulae[0].rec, nebulae[0].pos, WHITE);
-
-        // draw the second nebula
-        DrawTextureRec(nebula, nebulae[1].rec, nebulae[1].pos, RED);
+        // draw each nebula
+        for (int i = 0; i < nebNum; i++){
+            DrawTextureRec(nebula, nebulae[i].rec, nebulae[i].pos, RAYWHITE);
+        };
 
         // draw scarfy
         DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos, WHITE);
