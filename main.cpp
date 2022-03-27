@@ -98,6 +98,9 @@ int main(){
     Texture2D foreground = LoadTexture("textures/foreground.png");
     float fgX{}; //background (foreground) horizonal scrolling
 
+    //Collusion detection status
+    bool collision{};
+
     SetTargetFPS(60);
     while (!WindowShouldClose()){
         // delta time (time since last frame)
@@ -182,21 +185,55 @@ int main(){
 
         // update nebula animation frame
         for (int i = 0; i < nebNum; i++){
-            // update nebula animation frame
             nebulae[i] = updateAnimData(nebulae[i], dT, nebulaeMaxFrames);
         };
 
-        // draw each of the lots of nebulae
-        for (int i = 0; i < nebNum; i++){
-            DrawTextureRec(nebula, nebulae[i].rec, nebulae[i].pos, RAYWHITE);
-        };
+        //collision detection
+        for (AnimData nebula : nebulae){
+            
+            float pad{50};
+            Rectangle nebRec{
+                nebula.pos.x + pad, 
+                nebula.pos.y + pad, 
+                nebula.rec.width - (2 * pad), 
+                nebula.rec.height - (2 * pad)
+            };
+            
+            Rectangle scarfyRec{
+                scarfyData.pos.x,
+                scarfyData.pos.y, 
+                scarfyData.rec.width,
+                scarfyData.rec.height
+            };
 
-        // draw scarfy
-        DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos, WHITE);
+            if (CheckCollisionRecs(nebRec, scarfyRec)){
+                collision = true;
+            }
+        }
+
+        if (collision){
+            //Game lost, thus, no textures drawn + lose message
+            DrawText("Game Over!", (windowDimensions[0])-445, (windowDimensions[1])/2, 69, RED);
+
+        }
+        else if(scarfyData.pos.x >= finishLine){
+            DrawText("YOU WIN!", (windowDimensions[0])-420, (windowDimensions[1])/2, 69, GOLD);
+        }
+        else{
+            // draw each of the lots of nebulae
+            for (int i = 0; i < nebNum; i++){
+                // draw nebula
+                DrawTextureRec(nebula, nebulae[i].rec, nebulae[i].pos, RAYWHITE);
+            }
+
+            // draw scarfy
+            DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos, WHITE);
+        }
 
         // stop drawing
         EndDrawing(); 
     }
+
     UnloadTexture(scarfy);
     UnloadTexture(nebula);
     UnloadTexture(background);
