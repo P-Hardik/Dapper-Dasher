@@ -62,6 +62,9 @@ int main(){
 
     const int nebulaeMaxFrames = 7;
 
+    //finish line
+    float finishLine{nebulae[nebNum - 1].pos.x};
+
     // nebula X velocity (pixels/second)
     int nebVel{-200};
 
@@ -163,11 +166,14 @@ int main(){
 
         // update each nebula's position from lots of nebulae
         for (int i = 0; i < nebNum; i++){
-            nebulae[i].pos.x += nebVel * dT;
+            nebulae[i].pos.x += (nebVel * dT);
         };
 
         // update scarfy position
-        scarfyData.pos.y += velocity * dT;
+        scarfyData.pos.y += (velocity * dT);
+        
+        //update the position of finish line
+        finishLine += (nebVel * dT); 
 
         // update scarfy's animation frame 
         if (!isInAir){
