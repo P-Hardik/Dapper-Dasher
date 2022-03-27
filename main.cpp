@@ -8,6 +8,26 @@ struct AnimData{
     float runningTime;
 };
 
+bool isOnGround(AnimData data, int windowHeight){
+    return data.pos.y >= windowHeight - data.rec.height;
+};
+
+AnimData updateAnimData (AnimData data, float deltaTime, int maxFrame){
+    //update running time 
+    data.runningTime += deltaTime;
+    if(data.runningTime >= data.updateTime){
+        data.runningTime = 0.0;
+
+        //update animation frame
+        data.rec.x = data.frame * data.rec.width;
+        data.frame++;
+        if(data.frame > maxFrame){
+            data.frame = 0.0;
+        }   
+    }
+    return data;
+};
+
 int main(){
     //window dimensions
 
@@ -40,6 +60,8 @@ int main(){
         nebulae[i].updateTime = 0.0;
     };
 
+    const int nebulaeMaxFrames = 7;
+
     // nebula X velocity (pixels/second)
     int nebVel{-200};
 
@@ -52,6 +74,8 @@ int main(){
         1.0/12.0, //float updateTime
         0.0, //float runningTime
     };
+
+    const int scarfyMaxFrames = 5;
 
     // is the rectanlge in the air?
     bool isInAir{};
@@ -71,7 +95,7 @@ int main(){
         ClearBackground(WHITE);
 
         // perform ground check
-        if (scarfyData.pos.y >= windowDimensions[1] - scarfyData.rec.height){
+        if (isOnGround(scarfyData, windowDimensions[1])){
             // rectangle is on the ground
             velocity = 0;
             isInAir = false;
@@ -94,38 +118,15 @@ int main(){
         // update scarfy position
         scarfyData.pos.y += velocity * dT;
 
-        // update scarfy's animation frame
+        // update scarfy's animation frame 
         if (!isInAir){
-            // update running time
-            scarfyData.runningTime += dT;
-
-            if (scarfyData.runningTime >= scarfyData.updateTime){
-                scarfyData.runningTime = 0.0;
-
-                // update animation frame
-                scarfyData.rec.x = scarfyData.frame * scarfyData.rec.width;
-                scarfyData.frame++;
-
-                if (scarfyData.frame > 5){
-                    scarfyData.frame = 0;
-                }
-            }
+            scarfyData = updateAnimData(scarfyData, dT, scarfyMaxFrames);
         }
 
         // update nebula animation frame
         for (int i = 0; i < nebNum; i++){
             // update nebula animation frame
-            nebulae[i].runningTime += dT;
-
-            if (nebulae[i].runningTime >= nebulae[i].updateTime){
-                nebulae[i].runningTime = 0.0;
-                nebulae[i].rec.x = nebulae[i].frame * nebulae[i].rec.width;
-                nebulae[i].frame++;
-
-                if (nebulae[i].frame > 7){ 
-                    nebulae[i].frame = 0;
-                }
-            }
+            nebulae[i] = updateAnimData(nebulae[i], dT, nebulaeMaxFrames);
         };
 
         // draw each of the lots of nebulae
